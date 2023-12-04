@@ -24,7 +24,7 @@ services:
   dotnet_main:
     image: dotnet-web
     environment:
-      ConnectionStrings__Default: Server=localhost;Port=5432;Database=mydatabase;User Id=user;Password=passwd;
+      ConnectionStrings__Default: Server=localhost;Port=5432;Database=hwdb;Username=user;Password=passwd;
     ports:
       - "8080:80"
     build:
