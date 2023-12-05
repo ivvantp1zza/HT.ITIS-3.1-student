@@ -9,8 +9,16 @@ services:
     ports:
       - "5432:5432"
     
-#  dotnet_rabbitmq:
-#    image: rabbitmq:3-alpine
+  dotnet_rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbitmq
+#    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: "rabbitmquser"
+      RABBITMQ_DEFAULT_PASS: "rabbitmqpass"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
     
 #  dotnet_minio:
 #    image: minio/minio:latest
@@ -25,6 +33,10 @@ services:
     image: dotnet-web
     environment:
       ConnectionStrings__Default: Server=localhost;Port=5432;Database=hwdb;Username=user;Password=passwd;
+      RabbitMqConfig__Username: "rabbitmquser"
+      RabbitMqConfig__Password: "rabbitmqpass"
+      RabbitMqConfig__Hostname: "rabbitmq"
+      RabbitMqConfig__Port: "5672"
     ports:
       - "8080:80"
     build:
@@ -32,9 +44,26 @@ services:
       dockerfile: Dotnet.Homeworks.MainProject/Dockerfile
     depends_on:
       - dotnet_postgres
+      - dotnet_rabbitmq
     
-#  dotnet_mailing:
-#    image: dotnet-web
+  dotnet_mailing:
+    image: dotnet-web
+    environment:
+      EmailConfig__Email: "realgmail@gmail.com"
+      EmailConfig__Host: "smtp.gmail.com"
+      EmailConfig__Port: 123
+      EmailConfig__Password: "gmailpasswd"
+      RabbitMqConfig__Username: "rabbitmquser"
+      RabbitMqConfig__Password: "rabbitmqpass"
+      RabbitMqConfig__Hostname: "rabbitmq"
+      RabbitMqConfig__Port: "5672"
+    build:
+      context: .
+      dockerfile: Dotnet.Homeworks.Mailing.API/Dockerfile
+    ports:
+      - "5101:80"
+    depends_on:
+      - dotnet_rabbitmq
     
 #  dotnet_storage:
 #    image: dotnet-web
