@@ -1,3 +1,4 @@
+using Dotnet.Homeworks.Features.Products.Commands.DeleteProduct;
 using Dotnet.Homeworks.Features.Products.Commands.InsertProduct;
 using Dotnet.Homeworks.Features.Products.Commands.UpdateProduct;
 using Dotnet.Homeworks.Features.Products.Queries.GetProducts;
@@ -31,9 +32,10 @@ public class ProductManagementController : ControllerBase
     }
 
     [HttpDelete("product")]
-    public Task<IActionResult> DeleteProduct(Guid guid, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteProduct(Guid guid, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var result = await _mediator.Send(new DeleteProductByGuidCommand(guid), cancellationToken);
+        return result.IsSuccess ? Ok() : BadRequest(result.Error);
     }
 
     [HttpPut("product")]
